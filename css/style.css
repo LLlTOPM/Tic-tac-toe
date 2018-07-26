@@ -1,0 +1,18 @@
+.board {
+    width: 150px;
+    height: 150px;
+}
+
+.boardCell {
+    outline: 1px solid black;
+    float: left;
+    height: 50px;
+    width: 50px;
+    cursor: pointer;
+    text-align: center;
+    /*центрирование содержимого*/
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
