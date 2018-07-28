@@ -9,7 +9,7 @@
     height: 50px;
     width: 50px;
     cursor: pointer;
-    text-align: center;
+    /*text-align: center;*/
     /*центрирование содержимого*/
     display: flex;
     align-items: center;
