@@ -1,8 +1,10 @@
 var displayedSymbol = 'X',
     startGameButton = document.getElementById('startGame'),
+    columns = 3,
+    rows = 3,
     minutes = 0,
     seconds = 0,
-    timer;
+    timerid;
 
 startGameButton.onclick = function () {
     console.log("Game started");
@@ -11,10 +13,10 @@ startGameButton.onclick = function () {
     div.className = "board";
     document.body.replaceChild(div, startGameButton)
 
-    for (var i=0; i<9 ; i++) {
+    for (var i=0; i<(columns*rows) ; i++) {
         div = document.createElement('div');
         div.className = "boardCell";
-        div.id = "'cell_"+i;
+        div.id = "cell_"+i;
         div.addEventListener('click', marked)
         document.getElementsByClassName("board")[0].appendChild(div);
     }
@@ -30,7 +32,7 @@ startGameButton.onclick = function () {
     div.innerText = "00:00";
     document.body.appendChild(div);
 
-    timer = setInterval(timerStep, 1000);
+    timerid = setInterval(timerStep, 1000);
 }
 
 function timerStep() {
@@ -71,6 +73,7 @@ function reset() {
         boardCell[i].innerText = "";
     }
     timer.innerText = "00:00";
+    displayedSymbol = 'X';
     minutes = 0;
     seconds = 0;
 }
@@ -79,10 +82,10 @@ function marked() {
     if (this.innerText === ""){
         this.innerText = displayedSymbol;
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
+        checkEndOfGame ();
     } else {
         console.log(this.id + " is not empty");
     }
-    checkEndOfGame ();
 }
 
 function switcherDisplayedSymbol(displayedSymbol) {
@@ -90,6 +93,68 @@ function switcherDisplayedSymbol(displayedSymbol) {
         return 'X'
 }
 
-function checkEndOfGame() {
+function collectBoardCellsValuesToArray() {
+    var valuesOfBoardCells = [],
+        numberOfCell = 0;
 
+    for (var i=0; i<rows; i++){
+        valuesOfBoardCells[i]=[];
+
+        for (var j=0; j<columns; j++){
+            valuesOfBoardCells[i][j] = document.getElementById("cell_"+numberOfCell).innerText;
+            numberOfCell++;
+        }
+    }
+    return valuesOfBoardCells;
+}
+
+
+function checkEndOfGame() {
+    var boardCellsValues = collectBoardCellsValuesToArray(),
+        sortBoardCellsValues = [],
+        winCrossCombination = "XXX",
+        winCircleConbination = "OOO";
+
+    //checkRow
+    for (var i=0; i<rows; i++) {
+        for (var j=0; j<columns ;j++) {
+            sortBoardCellsValues[j] = boardCellsValues[i][j];
+        }
+        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+            displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
+            console.log("Win "+ displayedSymbol + "")
+            reset();
+        }
+    }
+
+    //checkColomn
+    for (j = 0; j<columns; j++) {
+        for (i = 0; i < rows; i++) {
+            sortBoardCellsValues[i] = boardCellsValues[i][j];
+        }
+        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+            displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
+            console.log("Win " + displayedSymbol + "")
+            reset();
+        }
+    }
+
+    //checkDiagonal
+    for (i = 0, j=0; i<rows; i++, j++) {
+        sortBoardCellsValues[i] = boardCellsValues[i][j];
+    }
+    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+        displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
+        console.log("Win " + displayedSymbol + "")
+        reset();
+    }
+
+    for (i = 0, j=columns-1; i<rows; i++, j--) {
+        sortBoardCellsValues[i] = boardCellsValues[i][j];
+    }
+    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+        displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
+        console.log("Win " + displayedSymbol + "")
+        reset();
+    }
 }
