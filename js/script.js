@@ -6,8 +6,38 @@ var displayedSymbol = 'X',
     seconds = 0,
     timerid;
 
+var modalWindow = {
+   // _block: null,
+    initBlock: function (html) {
+
+        _block = document.getElementById('blockscreen');
+
+        if (!_block) {
+            var parent = document.getElementsByTagName('body')[0];
+            var obj = parent.firstChild;
+            _block = document.createElement('div');
+            _block.style.display = 'flex';
+            _block.id = 'blockscreen';
+            _block.innerHTML = html;
+            parent.insertBefore(_block, obj);
+            _block.onclick = function () {
+                modalWindow.close();
+            }
+        } else {
+            _block.innerHTML = html;
+            _block.style.display = 'flex';
+        }
+    },
+    close: function () {
+        reset();
+        document.getElementById('blockscreen').style.display = 'none';
+    },
+    show: function (width, html) {
+        modalWindow.initBlock(html);
+    }
+}
+
 startGameButton.onclick = function () {
-    console.log("Game started");
 
     var div = document.createElement('div');
     div.className = "board";
@@ -46,7 +76,7 @@ function timerStep() {
         seconds = 0;
     }
     if (minutes > 59) {
-        reset();
+        checkEndOfGame();
     }
 
     if (seconds < 10){
@@ -66,7 +96,7 @@ function timerStep() {
 }
 
 function reset() {
-    console.log("reseted");
+
     var boardCell = document.getElementsByClassName('boardCell'),
         timer = document.getElementById('timer');
     for (var i=0; i<boardCell.length; i++){
@@ -76,6 +106,13 @@ function reset() {
     displayedSymbol = 'X';
     minutes = 0;
     seconds = 0;
+    if (timerid){
+        clearInterval(timerid);
+        timerid = setInterval(timerStep, 1000);
+    } else {
+        timerid = setInterval(timerStep, 1000);
+    }
+
 }
 
 function marked() {
@@ -108,22 +145,20 @@ function collectBoardCellsValuesToArray() {
     return valuesOfBoardCells;
 }
 
-
-function checkEndOfGame() {
+function checkWinner() {
     var boardCellsValues = collectBoardCellsValuesToArray(),
         sortBoardCellsValues = [],
         winCrossCombination = "XXX",
-        winCircleConbination = "OOO";
+        winCircleCombination = "OOO";
 
     //checkRow
     for (var i=0; i<rows; i++) {
         for (var j=0; j<columns ;j++) {
             sortBoardCellsValues[j] = boardCellsValues[i][j];
         }
-        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-            console.log("Win "+ displayedSymbol + "")
-            reset();
+            return "Выиграл игрок "+ displayedSymbol;
         }
     }
 
@@ -132,10 +167,9 @@ function checkEndOfGame() {
         for (i = 0; i < rows; i++) {
             sortBoardCellsValues[i] = boardCellsValues[i][j];
         }
-        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-            console.log("Win " + displayedSymbol + "")
-            reset();
+            return "Выиграл игрок "+ displayedSymbol;
         }
     }
 
@@ -143,18 +177,44 @@ function checkEndOfGame() {
     for (i = 0, j=0; i<rows; i++, j++) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
-    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-        console.log("Win " + displayedSymbol + "")
-        reset();
+        return "Выиграл игрок "+ displayedSymbol;
     }
 
     for (i = 0, j=columns-1; i<rows; i++, j--) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
-    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleConbination) {
+    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-        console.log("Win " + displayedSymbol + "")
-        reset();
+        return "Выиграл игрок "+ displayedSymbol;
+    }
+    //tie
+    if (checkTie()) {
+        return "Ничья";
+    }
+
+    //time is up
+    if (minutes > 59) {
+        return "Время истекло";
+    }
+
+    return false;
+}
+
+function checkTie() {
+    for (i=0; i<rows*columns; i++) {
+        if (document.getElementsByClassName('boardCell')[i].innerHTML == '') {
+            return false;
+        }
+    }
+    return true;
+}
+
+function checkEndOfGame() {
+    var resultsOfGame = checkWinner();
+    if (resultsOfGame) {
+        clearInterval(timerid);
+        modalWindow.show(500, resultsOfGame);
     }
 }

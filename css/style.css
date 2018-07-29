@@ -9,9 +9,18 @@
     height: 50px;
     width: 50px;
     cursor: pointer;
-    /*text-align: center;*/
     /*центрирование содержимого*/
     display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+#blockscreen {
+    width: 100%;
+    height: 100%;
+    background: rgba(100,100,100,0.5);
+    position: fixed;
     align-items: center;
     justify-content: center;
     font-size: 30px;
