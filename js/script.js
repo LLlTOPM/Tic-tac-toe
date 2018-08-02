@@ -7,48 +7,26 @@ var displayedSymbol = 'X',
     timerid;
 
 var modalWindow = {
-   // _block: null,
-    initBlock: function (html) {
-
-        _block = document.getElementById('blockscreen');
-
-        if (!_block) {
-            var parent = document.getElementsByTagName('body')[0];
-            var obj = parent.firstChild;
-            _block = document.createElement('div');
-            _block.style.display = 'flex';
-            _block.id = 'blockscreen';
-            _block.innerHTML = html;
-            parent.insertBefore(_block, obj);
-            _block.onclick = function () {
-                modalWindow.close();
-            }
-        } else {
-            _block.innerHTML = html;
-            _block.style.display = 'flex';
-        }
+    show: function (text) {
+        document.getElementById('blockscreen').innerHTML = text;
+        document.getElementById('blockscreen').style.display = 'flex';
     },
     close: function () {
         reset();
         document.getElementById('blockscreen').style.display = 'none';
-    },
-    show: function (width, html) {
-        modalWindow.initBlock(html);
     }
 }
 
-startGameButton.onclick = function () {
+function startGame() {
+    document.body.removeChild(document.getElementById('startGame'));
+    document.getElementById('board').style.display = 'flex';
 
-    var div = document.createElement('div');
-    div.className = "board";
-    document.body.replaceChild(div, startGameButton)
-
-    for (var i=0; i<(columns*rows) ; i++) {
-        div = document.createElement('div');
+    for (var i = 0; i < (columns * rows); i++) {
+        var div = document.createElement('div');
         div.className = "boardCell";
-        div.id = "cell_"+i;
+        div.id = "cell_" + i;
         div.addEventListener('click', marked)
-        document.getElementsByClassName("board")[0].appendChild(div);
+        document.getElementById("board").appendChild(div);
     }
 
     var input = document.createElement('input');
@@ -70,23 +48,26 @@ function timerStep() {
         result,
         visibleMinutes,
         visibleSeconds;
+
     seconds += 1;
+
     if (seconds > 59) {
         minutes += 1;
         seconds = 0;
     }
+
     if (minutes > 59) {
         checkEndOfGame();
     }
 
-    if (seconds < 10){
+    if (seconds < 10) {
         visibleSeconds = "0" + seconds;
     } else {
         visibleSeconds = seconds;
     }
 
     if (minutes < 10) {
-        visibleMinutes = "0"+minutes;
+        visibleMinutes = "0" + minutes;
     } else {
         visibleMinutes = minutes;
     }
@@ -99,14 +80,17 @@ function reset() {
 
     var boardCell = document.getElementsByClassName('boardCell'),
         timer = document.getElementById('timer');
-    for (var i=0; i<boardCell.length; i++){
+
+    for (var i = 0; i < boardCell.length; i++) {
         boardCell[i].innerText = "";
     }
+
     timer.innerText = "00:00";
     displayedSymbol = 'X';
     minutes = 0;
     seconds = 0;
-    if (timerid){
+
+    if (timerid) {
         clearInterval(timerid);
         timerid = setInterval(timerStep, 1000);
     } else {
@@ -116,10 +100,10 @@ function reset() {
 }
 
 function marked() {
-    if (this.innerText === ""){
+    if (this.innerText === "") {
         this.innerText = displayedSymbol;
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-        checkEndOfGame ();
+        checkEndOfGame();
     } else {
         console.log(this.id + " is not empty");
     }
@@ -127,18 +111,18 @@ function marked() {
 
 function switcherDisplayedSymbol(displayedSymbol) {
     if (displayedSymbol == 'X') return 'O'
-        return 'X'
+    return 'X'
 }
 
 function collectBoardCellsValuesToArray() {
     var valuesOfBoardCells = [],
         numberOfCell = 0;
 
-    for (var i=0; i<rows; i++){
-        valuesOfBoardCells[i]=[];
+    for (var i = 0; i < rows; i++) {
+        valuesOfBoardCells[i] = [];
 
-        for (var j=0; j<columns; j++){
-            valuesOfBoardCells[i][j] = document.getElementById("cell_"+numberOfCell).innerText;
+        for (var j = 0; j < columns; j++) {
+            valuesOfBoardCells[i][j] = document.getElementById("cell_" + numberOfCell).innerText;
             numberOfCell++;
         }
     }
@@ -152,42 +136,42 @@ function checkWinner() {
         winCircleCombination = "OOO";
 
     //checkRow
-    for (var i=0; i<rows; i++) {
-        for (var j=0; j<columns ;j++) {
+    for (var i = 0; i < rows; i++) {
+        for (var j = 0; j < columns; j++) {
             sortBoardCellsValues[j] = boardCellsValues[i][j];
         }
         if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-            return "Выиграл игрок "+ displayedSymbol;
+            return "Выиграл игрок " + displayedSymbol;
         }
     }
 
     //checkColomn
-    for (j = 0; j<columns; j++) {
+    for (j = 0; j < columns; j++) {
         for (i = 0; i < rows; i++) {
             sortBoardCellsValues[i] = boardCellsValues[i][j];
         }
         if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-            return "Выиграл игрок "+ displayedSymbol;
+            return "Выиграл игрок " + displayedSymbol;
         }
     }
 
     //checkDiagonal
-    for (i = 0, j=0; i<rows; i++, j++) {
+    for (i = 0, j = 0; i < rows; i++, j++) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
     if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-        return "Выиграл игрок "+ displayedSymbol;
+        return "Выиграл игрок " + displayedSymbol;
     }
 
-    for (i = 0, j=columns-1; i<rows; i++, j--) {
+    for (i = 0, j = columns - 1; i < rows; i++, j--) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
     if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
-        return "Выиграл игрок "+ displayedSymbol;
+        return "Выиграл игрок " + displayedSymbol;
     }
     //tie
     if (checkTie()) {
@@ -203,7 +187,7 @@ function checkWinner() {
 }
 
 function checkTie() {
-    for (i=0; i<rows*columns; i++) {
+    for (i = 0; i < rows * columns; i++) {
         if (document.getElementsByClassName('boardCell')[i].innerHTML == '') {
             return false;
         }
@@ -215,6 +199,6 @@ function checkEndOfGame() {
     var resultsOfGame = checkWinner();
     if (resultsOfGame) {
         clearInterval(timerid);
-        modalWindow.show(500, resultsOfGame);
+        modalWindow.show(resultsOfGame);
     }
 }
