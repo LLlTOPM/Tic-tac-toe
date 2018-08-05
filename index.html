@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<input type="button" value="Начать игру" id="startGame">
-<script src="js/script.js"></script>
+    <div style="display: none" id="blockscreen" onclick="modalWindow.close(); reset();"></div>
+    <div style="display: none" id="board"></div>
+    <input type="button" value="Начать игру" id="startGame" onclick="startGame()">
+    <script src="js/script.js"></script>
 </body>
 </html>
