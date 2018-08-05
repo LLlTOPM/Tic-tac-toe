@@ -1,5 +1,7 @@
 var displayedSymbol = 'X',
     startGameButton = document.getElementById('startGame'),
+    blockscreen = document.getElementById('blockscreen'),
+    board = document.getElementById('board'),
     columns = 3,
     rows = 3,
     minutes = 0,
@@ -8,25 +10,24 @@ var displayedSymbol = 'X',
 
 var modalWindow = {
     show: function (text) {
-        document.getElementById('blockscreen').innerHTML = text;
-        document.getElementById('blockscreen').style.display = 'flex';
+        blockscreen.innerHTML = text;
+        blockscreen.style.display = 'flex';
     },
     close: function () {
-        reset();
-        document.getElementById('blockscreen').style.display = 'none';
+        blockscreen.style.display = 'none';
     }
 }
 
 function startGame() {
-    document.body.removeChild(document.getElementById('startGame'));
-    document.getElementById('board').style.display = 'flex';
+    document.body.removeChild(startGameButton);
+    board.style.display = 'flex';
 
     for (var i = 0; i < (columns * rows); i++) {
         var div = document.createElement('div');
         div.className = "boardCell";
         div.id = "cell_" + i;
         div.addEventListener('click', marked)
-        document.getElementById("board").appendChild(div);
+        board.appendChild(div);
     }
 
     var input = document.createElement('input');
@@ -110,8 +111,7 @@ function marked() {
 }
 
 function switcherDisplayedSymbol(displayedSymbol) {
-    if (displayedSymbol == 'X') return 'O'
-    return 'X'
+    return displayedSymbol === 'X' ? 'O' : 'X'
 }
 
 function collectBoardCellsValuesToArray() {
@@ -140,7 +140,7 @@ function checkWinner() {
         for (var j = 0; j < columns; j++) {
             sortBoardCellsValues[j] = boardCellsValues[i][j];
         }
-        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
+        if (sortBoardCellsValues.join('') === winCrossCombination || sortBoardCellsValues.join('') === winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
             return "Выиграл игрок " + displayedSymbol;
         }
@@ -151,7 +151,7 @@ function checkWinner() {
         for (i = 0; i < rows; i++) {
             sortBoardCellsValues[i] = boardCellsValues[i][j];
         }
-        if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
+        if (sortBoardCellsValues.join('') === winCrossCombination || sortBoardCellsValues.join('') === winCircleCombination) {
             displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
             return "Выиграл игрок " + displayedSymbol;
         }
@@ -161,7 +161,7 @@ function checkWinner() {
     for (i = 0, j = 0; i < rows; i++, j++) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
-    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
+    if (sortBoardCellsValues.join('') === winCrossCombination || sortBoardCellsValues.join('') === winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
         return "Выиграл игрок " + displayedSymbol;
     }
@@ -169,7 +169,7 @@ function checkWinner() {
     for (i = 0, j = columns - 1; i < rows; i++, j--) {
         sortBoardCellsValues[i] = boardCellsValues[i][j];
     }
-    if (sortBoardCellsValues.join('') == winCrossCombination || sortBoardCellsValues.join('') == winCircleCombination) {
+    if (sortBoardCellsValues.join('') === winCrossCombination || sortBoardCellsValues.join('') === winCircleCombination) {
         displayedSymbol = switcherDisplayedSymbol(displayedSymbol);
         return "Выиграл игрок " + displayedSymbol;
     }
@@ -188,7 +188,7 @@ function checkWinner() {
 
 function checkTie() {
     for (i = 0; i < rows * columns; i++) {
-        if (document.getElementsByClassName('boardCell')[i].innerHTML == '') {
+        if (document.getElementsByClassName('boardCell')[i].innerHTML === '') {
             return false;
         }
     }
